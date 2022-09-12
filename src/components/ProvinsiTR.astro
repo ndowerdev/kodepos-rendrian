@@ -1,0 +1,13 @@
+---
+const { provinsi } = Astro.props;
+const routeSlug = {
+  provinsi: import.meta.env.SLUG_PROVINSI,
+  kota: import.meta.env.SLUG_KOTA,
+  kecamatan: import.meta.env.SLUG_KECAMATAN,
+  kelurahan: import.meta.env.SLUG_KELURAHAN,
+};
+---
+
+<a href={`${routeSlug.provinsi}${provinsi.slug}`} class="btn btn-block basis-[45%] m-1 p-2"
+  >{provinsi.name}
+</a>

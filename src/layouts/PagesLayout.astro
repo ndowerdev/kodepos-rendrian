@@ -1,0 +1,35 @@
+---
+import Navbar from "../components/Navbar.astro";
+import Footer from "../components/Footer.astro";
+
+const WEB_NAME = import.meta.env.WEB_NAME;
+const { seo, content } = Astro.props;
+
+const title = seo !== undefined ? seo.title : content.seo.title;
+const desc = seo !== undefined ? seo.desc : content.seo.desc;
+
+const theme = import.meta.env.WEB_THEME || "dark";
+---
+
+<!DOCTYPE html>
+<html lang="en" data-theme={theme}>
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={desc} />
+  </head>
+  <body>
+    <div class="lg:w-1/2 w-full p-2 m-auto">
+      <Navbar web_name={WEB_NAME} />
+      <article class="prose-lg mt-5">
+        <slot />
+      </article>
+
+      <Footer />
+    </div>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+---
+const props = Astro.props;
+const pagination = props.pagination;
+---
+
+<div class="btn-group flex justify-center mt-3">
+  <a href={pagination.first} class="btn">1</a>
+  <a class="btn btn-disabled">...</a>
+  <a href={pagination.prev} class="btn">«</a>
+  <a href="" class="btn">Page {pagination.current}/{pagination.last}</a>
+  <a href={pagination.next} class="btn">»</a>
+  <a class="btn btn-disabled">...</a>
+  <a href="#" class="btn">{pagination.last}</a>
+</div>

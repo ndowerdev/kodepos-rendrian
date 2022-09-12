@@ -1,0 +1,22 @@
+---
+import { Schema } from "astro-seo-schema";
+const { breadcrumbs } = Astro.props;
+
+---
+
+<Schema
+  item={{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    name: "Navigation",
+    itemListElement: breadcrumbs.map((data: any, index: number) => {
+    
+      return {
+        "@type": "ListItem",
+        position: index + 1,
+        name: data.name,
+        item: `${Astro.site?.origin}${data.link}`,
+      };
+    }),
+  }}
+/>

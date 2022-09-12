@@ -1,0 +1,96 @@
+---
+import Layout from "@layouts/Layout.astro";
+import ProvinsiData from "@components/ProvinsiData.vue";
+import SchemaHeader from "@components/SchemaHeader.astro";
+import BreadCrumbs from "@components/BreadCrumbs.astro";
+import { urbanSeo } from "@seo/urban";
+import * as helpers from "@utils/helper";
+import { ApiConnector } from "@utils/api";
+
+const params = Astro.params;
+const currentPage = Number(params.page) || 1;
+const slug = String(params.slug) || "riau";
+
+const result = await ApiConnector.getList({
+  recordName: "kodepos",
+  filter: `urban_slug='${slug}'`,
+  page: currentPage,
+  max: import.meta.env.MAX_LIST_PER_PAGE,
+  url: import.meta.env.PB_URL,
+});
+const routeSlug = helpers.routeSlug;
+const pagination = helpers.pagination({ type: "kelurahan", result, slug });
+const firstItem = result.items[0];
+const provinceName = helpers.toTitleCase(firstItem.province_name);
+const provinceSlug = firstItem.province_slug;
+const cityName = helpers.toTitleCase(firstItem.city);
+const citySlug = firstItem.city_slug;
+const districtName = helpers.toTitleCase(firstItem.sub_district);
+const districtSlug = firstItem.sub_district_slug;
+const urbanName = helpers.toTitleCase(firstItem.urban);
+const urbanSlug = firstItem.urban_slug;
+
+const seo = urbanSeo({
+  provinceName,
+  cityName,
+  districtName,
+  urbanName,
+  page: result.page,
+  totalPage: result.totalPages,
+});
+
+const breadcrumbs = [
+  {
+    name: "Home",
+    link: "/",
+  },
+  {
+    name: provinceName,
+    link: `/${routeSlug.provinsi}${provinceSlug}`,
+  },
+  {
+    name: cityName,
+    link: `/${routeSlug.kota}${citySlug}`,
+  },
+  {
+    name: districtName,
+    link: `/${routeSlug.kecamatan}${districtSlug}`,
+  },
+  {
+    name: urbanName,
+    link: `/${routeSlug.kelurahan}${urbanSlug}`,
+  },
+];
+---
+
+<Layout {seo}>
+  <SchemaHeader {breadcrumbs} slot="breadcumbs-schema" />
+  <BreadCrumbs slot="breadcumbs" {breadcrumbs} />
+
+  <ProvinsiData data={result} params={params} {routeSlug} {seo} client:load />
+  {
+    result.totalPages > 1 ? (
+      <div class="btn-group flex justify-center mt-3">
+        <a href={pagination.first} class="btn">
+          1
+        </a>
+        <a class="btn btn-disabled">...</a>
+        <a href={pagination.prev} class="btn">
+          «
+        </a>
+        <a href="" class="btn">
+          Page {pagination.current}/{pagination.last}
+        </a>
+        <a href={pagination.next} class="btn">
+          »
+        </a>
+        <a class="btn btn-disabled">...</a>
+        <a href={pagination.lastLink} class="btn">
+          {pagination.last}
+        </a>
+      </div>
+    ) : (
+      ""
+    )
+  }
+</Layout>

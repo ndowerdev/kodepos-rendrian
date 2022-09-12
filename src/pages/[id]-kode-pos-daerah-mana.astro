@@ -1,0 +1,78 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ProvinsiData from "../components/ProvinsiData.vue";
+const params = Astro.params;
+import { ApiConnector } from "@utils/api";
+
+// const result: any = await ApiConnector.getAll({
+//   recordName: "kodepos",
+//   filter: `postal_code='${params.id}'`,
+//   url: import.meta.env.PB_URL,
+// });
+const result: any = await ApiConnector.getList({
+  page: 1,
+  max: 500,
+  recordName: "kodepos",
+  filter: `postal_code='${params.id}'`,
+  url: import.meta.env.PB_URL,
+});
+
+console.log(result)
+const toTitleCase = (str: string) => {
+  return str.replace(/-/g, " ").replace(/\w\S*/g, function (txt) {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+  });
+};
+
+const seo = {
+  param: params,
+  title: `${params.id} Kode Pos Daerah Mana?`,
+  desc: "Hasil pencarian kode pos dengan query ${params.id}",
+};
+const routeSlug = {
+  provinsi: import.meta.env.SLUG_PROVINSI,
+  kota: import.meta.env.SLUG_KOTA,
+  kecamatan: import.meta.env.SLUG_KECAMATAN,
+  kelurahan: import.meta.env.SLUG_KELURAHAN,
+};
+
+// const pagination = {
+//   current: result.page,
+//   first: `/${routeSlug.provinsi}${slug}/${result.page - 1}`,
+//   prev:
+//     result.page > 1 && result.page <= result.totalPages
+//       ? `/${routeSlug.provinsi}${slug}/${result.page - 1}`
+//       : null,
+//   next:
+//     result.page < result.totalPages
+//       ? `/${routeSlug.provinsi}${slug}/${result.page + 1}`
+//       : null,
+//   last: result.totalPages,
+// };
+---
+
+<Layout {seo}>
+  {
+    result.totalItems >= 1 ? (
+      <ProvinsiData data={result} params={params} {routeSlug} {seo} client:load>
+        <p class="text-justify">
+          Terdapat {result.totalItems} daerah yang memiliki kode pos {params.id}
+          , yaitu{" "}
+          {result.items.map((item: any) => toTitleCase(item.urban)).join(", ")}.
+        </p>
+        <p>
+          Untuk keterangan lebih lanjut silahkan lihat pada tabel untuk lebih
+          detailnya
+        </p>
+      </ProvinsiData>
+    ) : (
+      <article class="prose-xl text-center">
+        <h2>Data Kode Pos {params.id} Tidak Ditemukan</h2>
+        <p>
+          Tidak ada data kode pos dengan nomor {params.id} di dalam database
+          kode pos kami.
+        </p>
+      </article>
+    )
+  }
+</Layout>

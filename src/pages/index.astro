@@ -1,0 +1,39 @@
+---
+import Layout from "@layouts/Layout.astro";
+import { ApiConnector } from "@utils/api";
+import ProvinsiTR from "@components/ProvinsiTR.astro";
+
+const result = await ApiConnector.getAll({
+  recordName: "provinsi",
+  filter: "",
+  url: import.meta.env.PB_URL,
+});
+
+const seo = {
+  title: `Data Kode Pos Indonesia Terlengkap`,
+  desc: "Kumpulan data kode pos indonesia paling lengkap berdasarkan Provinsi, Kota / Kabupaten, Kecamatan dan Kelurahan, serta pencarian kode pos dengan mudah",
+};
+---
+
+<Layout {seo}>
+  <main>
+    <h2 class="text-center font-bold text-2xl m-3">
+      DATA KODE POS BERDASARKAN PROVINSI
+    </h2>
+    <div class="flex flex-row flex-wrap gap-3 m-auto justify-center"></div>
+    {result.map((provinsi: object) => <ProvinsiTR {provinsi} />)}
+    <!-- <div class="overflow-x-auto">
+      <table class="table w-full">
+      
+        <thead>
+          <tr>
+            <th>Provinsi</th>
+          </tr>
+        </thead>
+        <tbody>
+         
+        </tbody>
+      </table>
+    </div> -->
+  </main>
+</Layout>

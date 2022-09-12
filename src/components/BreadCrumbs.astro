@@ -1,0 +1,10 @@
+---
+import BreadCrumbItem from "./BreadCrumbItem.astro";
+const { breadcrumbs } = Astro.props;
+---
+
+<div slot="breadcumbs" class="text-sm breadcrumbs flex justify-center p-3">
+  <ul>
+    {breadcrumbs.map((item: Object) => <BreadCrumbItem {item} />)}
+  </ul>
+</div>

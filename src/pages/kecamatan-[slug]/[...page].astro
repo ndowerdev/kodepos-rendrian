@@ -1,0 +1,83 @@
+---
+import Layout from "@layouts/Layout.astro";
+import ProvinsiData from "@components/ProvinsiData.vue";
+import SchemaHeader from "@components/SchemaHeader.astro";
+import BreadCrumbs from "@components/BreadCrumbs.astro";
+import { districtSeo } from "@seo/district";
+import * as helpers from "@utils/helper";
+import { ApiConnector } from "@utils/api";
+
+const params = Astro.params;
+const currentPage = Number(params.page) || 1;
+const slug = String(params.slug) || "riau";
+
+const result = await ApiConnector.getList({
+  recordName: "kodepos",
+  filter: `sub_district_slug='${slug}'`,
+  page: currentPage,
+  max: import.meta.env.MAX_LIST_PER_PAGE,
+  url: import.meta.env.PB_URL,
+});
+
+const routeSlug = helpers.routeSlug;
+
+const pagination = helpers.pagination({
+  type: "kecamatan",
+  result,
+  slug,
+});
+
+const provinceName = helpers.toTitleCase(result.items[0].province_name);
+const provinceSlug = result.items[0].province_slug;
+const cityName = helpers.toTitleCase(result.items[0].city);
+const citySlug = result.items[0].city_slug;
+
+const districtName = helpers.toTitleCase(result.items[0].sub_district);
+const districtSlug = result.items[0].sub_district_slug;
+
+const seo = districtSeo({
+  provinceName,
+  cityName,
+  districtName,
+  page: result.page,
+  totalPage: result.totalPages,
+});
+const breadcrumbs = [
+  {
+    name: "Home",
+    link: "/",
+  },
+  {
+    name: provinceName,
+    link: `/${routeSlug.provinsi}${provinceSlug}`,
+  },
+  {
+    name: cityName,
+    link: `/${routeSlug.kota}${citySlug}`,
+  },
+  {
+    name: districtName,
+    link: `/${routeSlug.kecamatan}${districtSlug}`,
+  },
+  {
+    name: seo.title,
+    link: Astro.url.pathname,
+  },
+];
+---
+
+<Layout {seo}>
+  <SchemaHeader {breadcrumbs} slot="breadcumbs-schema" />
+  <BreadCrumbs slot="breadcumbs" {breadcrumbs} />
+
+  <ProvinsiData data={result} params={params} {routeSlug} {seo} client:load />
+  <div class="btn-group flex justify-center mt-3">
+    <a href={pagination.first} class="btn">1</a>
+    <a class="btn btn-disabled">...</a>
+    <a href={pagination.prev} class="btn">«</a>
+    <a href="" class="btn">Page {pagination.current}/{pagination.last}</a>
+    <a href={pagination.next} class="btn">»</a>
+    <a class="btn btn-disabled">...</a>
+    <a href={pagination.lastLink} class="btn">{pagination.last}</a>
+  </div>
+</Layout>

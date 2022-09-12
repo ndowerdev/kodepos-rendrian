@@ -1,0 +1,73 @@
+---
+import Layout from "@layouts/Layout.astro";
+import ProvinsiData from "@components/ProvinsiData.vue";
+import SchemaHeader from "@components/SchemaHeader.astro";
+import BreadCrumbs from "@components/BreadCrumbs.astro";
+import { citySeo } from "@seo/city";
+import * as helpers from "@utils/helper";
+import { ApiConnector } from "@utils/api";
+import ProvinsiDataPagination from "@components/ProvinsiDataPagination.astro";
+
+const params = Astro.params;
+const currentPage = Number(params.page) || 1;
+const slug = String(params.slug) || "pekanbaru";
+
+const result = await ApiConnector.getList({
+  recordName: "kodepos",
+  filter: `city_slug='${slug}'`,
+  page: currentPage,
+  max: import.meta.env.MAX_LIST_PER_PAGE,
+  url: import.meta.env.PB_URL,
+});
+
+// const result = await client.records.getList("kodepos", currentPage, 20, {
+//   filter: `city_slug='${slug}'`,
+// });
+
+const routeSlug = helpers.routeSlug;
+
+const pagination = helpers.pagination({
+  type: "kota",
+  result,
+  slug,
+});
+
+// extra
+const provinceName = helpers.toTitleCase(result.items[0].province_name);
+const provinceSlug = result.items[0].province_slug;
+const cityName = helpers.toTitleCase(result.items[0].city);
+
+const seo = citySeo({
+  provinceName: provinceName,
+  cityName: cityName,
+  page: result.page,
+  totalPage: result.totalPages,
+});
+
+const breadcrumbs = [
+  {
+    name: "Home",
+    link: "/",
+  },
+  {
+    name: `${provinceName}`,
+    link: `/${routeSlug.provinsi}${provinceSlug}`,
+  },
+  {
+    name: cityName,
+    link: `/${routeSlug.kota}${params.slug}`,
+  },
+  {
+    name: seo.title,
+    link: Astro.url.pathname,
+  },
+];
+---
+
+<Layout {seo}>
+  <SchemaHeader {breadcrumbs} slot="breadcumbs-schema" />
+  <BreadCrumbs slot="breadcumbs" {breadcrumbs} />
+
+  <ProvinsiData data={result} params={params} {routeSlug} {seo} client:load />
+  <ProvinsiDataPagination {pagination} />
+</Layout>

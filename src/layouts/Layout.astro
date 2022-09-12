@@ -1,0 +1,51 @@
+---
+import Navbar from "../components/Navbar.astro";
+import Footer from "../components/Footer.astro";
+import { Schema } from "astro-seo-schema";
+import { SEO } from "astro-seo";
+
+const WEB_NAME = import.meta.env.WEB_NAME;
+const { seo } = Astro.props;
+
+if (import.meta.env.DEV) {
+  console.log({
+    path: Astro.url.href,
+    seo,
+  });
+}
+
+const theme = import.meta.env.WEB_THEME || "luxury";
+
+const SearchSchema: any = {
+  "@context": "http://schema.org",
+  "@type": "WebSite",
+  url: import.meta.env.SITE_URL,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: `${import.meta.env.SITE_URL}/search/{query}`,
+    "query-input": "required name=query",
+  },
+};
+---
+
+<!DOCTYPE html>
+<html lang="en" data-theme={theme}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=yes" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <SEO title={seo.title} description={seo.desc} />
+    <Schema item={SearchSchema} />
+    <slot name="schema" />
+    <slot name="breadcumbs-schema" />
+  </head>
+  <body>
+    <div class="lg:w-2/3 w-full p-2 m-auto">
+      <Navbar web_name={WEB_NAME} />
+      <slot name="breadcumbs" />
+      <slot />
+      <Footer />
+    </div>
+  </body>
+</html>
