@@ -11,7 +11,7 @@ const search = async () => {
 
   data.value = await ApiConnector.getList({
     recordName: "kodepos",
-    filter: `province_name ~ '%${keyword.value}%' || city ~ '${keyword.value}' || sub_district ~ '${keyword.value}' || urban ~ '${keyword.value}'`,
+    filter: `province_name ~ '%${keyword.value}%' || city ~ '%${keyword.value}%' || sub_district ~ '%${keyword.value}%' || urban ~ '%${keyword.value}%' || postal_code ~ '%${keyword.value}%'`,
     page: 1,
     max: 50,
     url: props.PocketBaseUrl,
