@@ -1,6 +1,6 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import ProvinsiData from "../components/ProvinsiData.vue";
+import Layout from "@layouts/Layout.astro";
+import ProvinsiData from "@components/ProvinsiData.vue";
 const params = Astro.params;
 import { ApiConnector } from "@utils/api";
 
@@ -17,7 +17,7 @@ const result: any = await ApiConnector.getList({
   url: import.meta.env.PB_URL,
 });
 
-console.log(result)
+// console.log(result)
 const toTitleCase = (str: string) => {
   return str.replace(/-/g, " ").replace(/\w\S*/g, function (txt) {
     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
