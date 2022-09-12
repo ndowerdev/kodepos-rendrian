@@ -20,8 +20,9 @@ const seo = {
     <h2 class="text-center font-bold text-2xl m-3">
       DATA KODE POS BERDASARKAN PROVINSI
     </h2>
-    <div class="flex flex-row flex-wrap gap-3 m-auto justify-center"></div>
+    <div class="flex flex-row flex-wrap gap-3 m-auto justify-center">
     {result.map((provinsi: object) => <ProvinsiTR {provinsi} />)}
+    </div>
     <!-- <div class="overflow-x-auto">
       <table class="table w-full">
       
